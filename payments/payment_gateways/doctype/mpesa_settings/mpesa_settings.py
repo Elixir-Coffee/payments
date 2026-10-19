@@ -16,6 +16,8 @@ from payments.payment_gateways.doctype.mpesa_settings.mpesa_custom_fields import
 )
 from payments.utils import erpnext_app_import_guard
 
+from payments.utils.gateway_guard import gateway_required
+
 
 class MpesaSettings(Document):
 	supported_currencies = ("KES",)
@@ -150,6 +152,7 @@ def sanitize_mobile_number(number):
 
 
 @frappe.whitelist(allow_guest=True)
+@gateway_required("Mpesa")  # framework#285
 def verify_transaction(**kwargs):
 	"""Verify the transaction result received via callback from stk."""
 	transaction_response = frappe._dict(kwargs["Body"]["stkCallback"])
@@ -264,6 +267,7 @@ def get_account_balance(request_payload):
 
 
 @frappe.whitelist(allow_guest=True)
+@gateway_required("Mpesa")  # framework#285
 def process_balance_info(**kwargs):
 	"""Process and store account balance information received via callback from the account balance API call."""
 	account_balance_response = frappe._dict(kwargs["Result"])
